@@ -16,31 +16,32 @@ public class Main {
         Graph input_graph;
 
         try {
-            String id;
+            String file_name;
             String solution_name = "";
             if (args.length >= 1) {
-                id = args[0];
+                file_name = args[0];
                 solution_name = args[1];
             } else {
-                System.out.println("Enter id");
+                System.out.println("Enter file location");
                 Scanner s = new Scanner(System.in);
-                id = s.next();
+                file_name = s.next();
+                System.out.println("Enter output file name");
+                solution_name = s.next();
             }
-            String path = "./instances/exact_";
-            input_graph = GraphReader.read_graph(path+id+".gr");
-            tree_decomposition = GraphReader.read_tree_decomposition(path+id+".ntd");
+            input_graph = GraphReader.read_graph(file_name+".gr");
+            tree_decomposition = GraphReader.read_tree_decomposition(file_name + ".ntd");
             int maxdepth = tree_decomposition.width;
             boolean solved = false;
             while (!solved) {
-                System.out.printf("[%s] Attempting to solve, max depth is %d.\n", id, maxdepth);
+                System.out.printf("[%s] Attempting to solve, max depth is %d.\n", file_name, maxdepth);
                 Solver solver = new Solver(input_graph, tree_decomposition, maxdepth);
                 solver.solve();
                 solved = solver.results.size() > 0;
-                String name = "./solutions/" + solution_name + (args.length > 0 ? args[0] + ".solution" : "tdd.solution");
+                String name = "./solutions/" + solution_name + ".solution";
                 if (!solved) {
-                    System.out.printf("[%s] No solution with height less than or equal to %d was found.\n", id, maxdepth);
+                    System.out.printf("[%s] No solution with height less than or equal to %d was found.\n", file_name, maxdepth);
                 } else {
-                    System.out.printf("[%s] Solution with height %d was found.\n", id, maxdepth);
+                    System.out.printf("[%s] Solution with height %d was found.\n", file_name, maxdepth);
                     var best_solution = solver.get_minimal_depth_solution();
                     if (solver.verify_solution(best_solution)) {
                         GraphWriter.save_tree(best_solution, name);
